@@ -72,7 +72,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
             $stderr.puts "Couldn't create database for #{config.inspect}, charset: #{config[:charset] || @charset}, collation: #{config[:collation] || @collation}"
             $stderr.puts "(if you set the charset manually, make sure you have a matching collation)" if config[:charset]
           end
-        when 'postgresql'
+        when 'postgresql', 'postgis'
           @encoding = config[:encoding] || ENV['CHARSET'] || 'utf8'
           begin
             ActiveRecord::Base.establish_connection(config.merge(:database => 'postgres', :schema_search_path => 'public'))
@@ -81,6 +81,8 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
           rescue StandardError => e
             catch_error(:create, e, config)
           end
+        else
+          $stderr.puts "Could not create database for #{config[:database]}"
         end
       else
         $stderr.puts "#{config[:database]} already exists"
